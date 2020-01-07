@@ -1,0 +1,15 @@
+1ok.hard drop
+2ok.hold
+3ok.next
+4ok.gameover
+5ok.levelup
+6ok.more key set
+7ok.no timer reset
+8ok.shuffle block order
+9ok.shadow
+10.format codes
+11.super rotation system
+12.use class
+13.t-spin
+14.score ranking
+15.item
