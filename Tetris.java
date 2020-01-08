@@ -10,8 +10,21 @@ public class Tetris extends JPanel {
 
     private static final long serialVersionUID = -8715353373678321308L;
 
-    private final Color[] tetraminoColors = { Color.cyan, Color.blue, Color.orange, Color.yellow, Color.green,
-            Color.pink, Color.red };
+    private final Color[] tetraminoColors = {
+            // T piece
+            Color.magenta,
+            // S piece
+            Color.green,
+            // Z piece
+            Color.red,
+            // L piece
+            Color.orange,
+            // J piece
+            Color.blue,
+            // O piece
+            Color.yellow,
+            // I piece
+            Color.cyan };
 
     private final int nextNum = 4;
     private Point pieceOrigin;
@@ -46,7 +59,7 @@ public class Tetris extends JPanel {
         holdPiece = -1;
         canHold = true;
         nextPieces.clear();
-        setBounds(0, 0, width + 2 + blockSM*6, height + 30);
+        setBounds(0, 0, width + 2 + blockSM * 6, height + 30);
         well = new Color[boardWidth][boardHeight];
         for (int i = 0; i < boardWidth; i++) {
             for (int j = 0; j < boardHeight; j++) {
@@ -96,7 +109,8 @@ public class Tetris extends JPanel {
     }
 
     /**
-     * Rotate the piece clockwise or counterclockwise
+     * Rotate the piece clockwise or counterclockwise +1 means clockwise and -1
+     * means counterclockwise
      * 
      * @return if interruption is needed
      */
@@ -160,9 +174,16 @@ public class Tetris extends JPanel {
         return !nearFix && !preNearFix;
     }
 
-    public void fastDrop() {
-        if (!dropDown())
-            score++;
+    /**
+     * interrupt and drop if nearFix is false
+     * 
+     * @return if interruption is needed
+     */
+    public boolean fastDrop() {
+        if (!nearFix)
+            if (!dropDown())
+                score++;
+        return !nearFix;
     }
 
     public void hardDrop() {
@@ -255,16 +276,16 @@ public class Tetris extends JPanel {
 
         switch (numClears) {
         case 1:
-            score += 100;
+            score += 100*scoreLine/10;
             break;
         case 2:
-            score += 300;
+            score += 300*scoreLine/10;
             break;
         case 3:
-            score += 500;
+            score += 500*scoreLine/10;
             break;
         case 4:
-            score += 800;
+            score += 800*scoreLine/10;
             break;
         }
         scoreLine += numClears;
@@ -277,8 +298,15 @@ public class Tetris extends JPanel {
     public long getSpeed() {
         if (collidesAt(pieceOrigin.x, pieceOrigin.y + 1, rotation)) {
             return 1000;
-        } else
-            return 1000 - scoreLine / 10 * 50;
+        } else {
+            // return 1000 - scoreLine / 10 * 50;
+            long speed = 1000;
+            long level = scoreLine / 10;
+            for (int i = 0; i < level; i++) {
+                speed = speed * 3 / 4;
+            }
+            return speed;
+        }
     }
 
     /**
@@ -314,13 +342,13 @@ public class Tetris extends JPanel {
             int piece = nextPieces.get(i);
             g.setColor(tetraminoColors[piece]);
             for (Point p : Tetramino.Tetraminos[piece][0]) {
-                g.fillRect((p.x + boardWidth+1) * blockSM, (p.y + 1 + 4 * i) * blockSM, blockSize, blockSize);
+                g.fillRect((p.x + boardWidth + 1) * blockSM, (p.y + 1 + 4 * i) * blockSM, blockSize, blockSize);
             }
         }
         if (holdPiece >= 0) {
             g.setColor(tetraminoColors[holdPiece]);
             for (Point p : Tetramino.Tetraminos[holdPiece][0]) {
-                g.fillRect((p.x + boardWidth+1) * blockSM, (p.y + 1 + 4 * nextNum) * blockSM, blockSize, blockSize);
+                g.fillRect((p.x + boardWidth + 1) * blockSM, (p.y + 1 + 4 * nextNum) * blockSM, blockSize, blockSize);
             }
         }
     }
@@ -338,9 +366,9 @@ public class Tetris extends JPanel {
 
         // Display the score
         g.setColor(Color.WHITE);
-        g.drawString("score:" + score, width/2, blockSM);
-        g.drawString("line:" + scoreLine, width/2, blockSM*2);
-        g.drawString("HOLD",(boardWidth+1)*blockSM,(nextNum*4+1)*blockSM);
+        g.drawString("score:" + score, width / 2, blockSM);
+        g.drawString("line:" + scoreLine, width / 2, blockSM * 2);
+        g.drawString("HOLD", (boardWidth + 1) * blockSM, (nextNum * 4 + 1) * blockSM);
 
         // Draw the currently falling piece
         drawShadow(g);

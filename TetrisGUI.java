@@ -48,12 +48,11 @@ public class TetrisGUI {
                 if (!game.isGameOver()) {
                     switch (e.getKeyCode()) {
                     case KeyEvent.VK_J:
-                        if (game.rotate(-1))
+                        if (game.rotate(+1))
                             th.interrupt();
                         break;
-                    case KeyEvent.VK_I:
                     case KeyEvent.VK_K:
-                        if (game.rotate(+1))
+                        if (game.rotate(-1))
                             th.interrupt();
                         break;
                     case KeyEvent.VK_LEFT:
@@ -69,7 +68,7 @@ public class TetrisGUI {
                     case KeyEvent.VK_SPACE:
                     case KeyEvent.VK_S:
                     case KeyEvent.VK_DOWN:
-                        game.fastDrop();
+                        if(game.fastDrop())
                         th.interrupt();
                         break;
                     case KeyEvent.VK_UP:
