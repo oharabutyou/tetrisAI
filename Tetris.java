@@ -10,30 +10,12 @@ public class Tetris extends JPanel {
 
     private static final long serialVersionUID = -8715353373678321308L;
 
-    private final Color[] tetraminoColors = {
-            // T piece
-            Color.magenta,
-            // S piece
-            Color.green,
-            // Z piece
-            Color.red,
-            // L piece
-            Color.orange,
-            // J piece
-            Color.blue,
-            // O piece
-            Color.yellow,
-            // I piece
-            Color.cyan };
-
     private final int nextNum = 4;
-    private Point pieceOrigin;
-    private int currentPiece;
-    private int holdPiece;
+    private Tetramino current;
+    private Tetramino hold;
+    private ArrayList<Tetramino> nextPieces = new ArrayList<>();
     private boolean canHold;
-    private int rotation;
     private boolean nearFix;
-    private ArrayList<Integer> nextPieces = new ArrayList<Integer>();
     private boolean gameOver;
 
     private long score;
@@ -56,7 +38,7 @@ public class Tetris extends JPanel {
         score = 0;
         scoreLine = 0;
         nearFix = false;
-        holdPiece = -1;
+        hold = null;
         canHold = true;
         nextPieces.clear();
         setBounds(0, 0, width + 2 + blockSM * 6, height + 30);
@@ -77,16 +59,18 @@ public class Tetris extends JPanel {
      * Put a new, random piece into the dropping position
      */
     public boolean newPiece() {
-        pieceOrigin = new Point(5, 2);
-        rotation = 0;
         while (nextPieces.size() <= nextNum) {
             ArrayList<Integer> news = new ArrayList<>();
             Collections.addAll(news, 0, 1, 2, 3, 4, 5, 6);
             Collections.shuffle(news);
-            nextPieces.addAll(news);
+            for (Integer integer : news) {
+                nextPieces.add(new Tetramino(integer));
+            }
         }
-        currentPiece = nextPieces.remove(0);
-        if (collidesAt(pieceOrigin.x, pieceOrigin.y, rotation))
+        current = nextPieces.remove(0);
+        current.setRotation(0);
+        current.setOrigin(new Point(5, 2));
+        if (collidesAt(0, 0, current.getRotation()))
             return false;
         return true;
     }
@@ -94,14 +78,16 @@ public class Tetris extends JPanel {
     /**
      * Collision test for the dropping piece
      * 
-     * @param x
-     * @param y
+     * @param moveX
+     * @param moveY
      * @param rotation
      * @return
      */
-    private boolean collidesAt(int x, int y, int rotation) {
-        for (Point p : Tetramino.Tetraminos[currentPiece][rotation]) {
-            if (well[p.x + x][p.y + y] != Color.BLACK) {
+    private boolean collidesAt(int moveX, int moveY, int rotation) {
+        for (Point p : current.getPoints(rotation)) {
+            int x = p.x + current.getOriginX() + moveX;
+            int y = p.y + current.getOriginY() + moveY;
+            if (well[x][y] != Color.BLACK) {
                 return true;
             }
         }
@@ -116,12 +102,12 @@ public class Tetris extends JPanel {
      */
     public boolean rotate(int i) {
         boolean rotated = false;
-        int newRotation = (rotation + i) % 4;
+        int newRotation = (current.getRotation() + i) % 4;
         if (newRotation < 0) {
             newRotation = 3;
         }
-        if (!collidesAt(pieceOrigin.x, pieceOrigin.y, newRotation)) {
-            rotation = newRotation;
+        if (!collidesAt(0, 0, newRotation)) {
+            current.setRotation(newRotation);
             rotated = true;
         }
         repaint();
@@ -135,8 +121,8 @@ public class Tetris extends JPanel {
      */
     public boolean move(int i) {
         boolean moved = false;
-        if (!collidesAt(pieceOrigin.x + i, pieceOrigin.y, rotation)) {
-            pieceOrigin.x += i;
+        if (!collidesAt(i, 0, current.getRotation())) {
+            current.moveOrigin(i, 0);
             moved = true;
         }
         repaint();
@@ -148,8 +134,8 @@ public class Tetris extends JPanel {
      */
     public boolean dropDown() {
         boolean fix = false;
-        if (!collidesAt(pieceOrigin.x, pieceOrigin.y + 1, rotation)) {
-            pieceOrigin.y += 1;
+        if (!collidesAt(0, 1, current.getRotation())) {
+            current.moveOrigin(0, 1);
         } else {
             fixToWell();
             fix = true;
@@ -166,7 +152,7 @@ public class Tetris extends JPanel {
      */
     private boolean setNearFix() {
         boolean preNearFix = nearFix;
-        if (collidesAt(pieceOrigin.x, pieceOrigin.y + 1, rotation)) {
+        if (collidesAt(0, 1, current.getRotation())) {
             nearFix = true;
         } else {
             nearFix = false;
@@ -200,9 +186,10 @@ public class Tetris extends JPanel {
     public boolean hold() {
         if (canHold) {
             canHold = false;
-            if (holdPiece >= 0)
-                nextPieces.add(0, holdPiece);
-            holdPiece = currentPiece;
+            if (hold != null)
+                nextPieces.add(0, hold);
+            current.setRotation(0);
+            hold = current;
             newPiece();
             repaint();
             return true;
@@ -215,8 +202,8 @@ public class Tetris extends JPanel {
      * detection.
      */
     public void fixToWell() {
-        for (Point p : Tetramino.Tetraminos[currentPiece][rotation]) {
-            well[pieceOrigin.x + p.x][pieceOrigin.y + p.y] = tetraminoColors[currentPiece];
+        for (Point p : current.getPoints()) {
+            well[current.getOriginX() + p.x][current.getOriginY() + p.y] = current.getColor();
         }
         clearRows();
         nearFix = false;
@@ -276,16 +263,16 @@ public class Tetris extends JPanel {
 
         switch (numClears) {
         case 1:
-            score += 100*scoreLine/10;
+            score += 100 * scoreLine / 10;
             break;
         case 2:
-            score += 300*scoreLine/10;
+            score += 300 * scoreLine / 10;
             break;
         case 3:
-            score += 500*scoreLine/10;
+            score += 500 * scoreLine / 10;
             break;
         case 4:
-            score += 800*scoreLine/10;
+            score += 800 * scoreLine / 10;
             break;
         }
         scoreLine += numClears;
@@ -296,7 +283,7 @@ public class Tetris extends JPanel {
     }
 
     public long getSpeed() {
-        if (collidesAt(pieceOrigin.x, pieceOrigin.y + 1, rotation)) {
+        if (collidesAt(0, 1, current.getRotation())) {
             return 1000;
         } else {
             // return 1000 - scoreLine / 10 * 50;
@@ -313,13 +300,15 @@ public class Tetris extends JPanel {
      * Draw the shadow piece It needs drawing shadow before drawing current piece
      */
     private void drawShadow(Graphics g) {
-        int shadow = pieceOrigin.y;
-        while (!collidesAt(pieceOrigin.x, shadow + 1, rotation))
+        int shadow = 0;
+        while (!collidesAt(0, shadow + 1, current.getRotation()))
             shadow++;
-        Color c = tetraminoColors[currentPiece];
+        Color c = current.getColor();
         g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 100));
-        for (Point p : Tetramino.Tetraminos[currentPiece][rotation]) {
-            g.fillRect((p.x + pieceOrigin.x) * blockSM, (p.y + shadow) * blockSM, blockSize, blockSize);
+        for (Point p : current.getPoints()) {
+            int x = p.x + current.getOriginX();
+            int y = p.y + current.getOriginY() + shadow;
+            g.fillRect(x * blockSM, y * blockSM, blockSize, blockSize);
         }
     }
 
@@ -331,23 +320,24 @@ public class Tetris extends JPanel {
         if (gameOver)
             g.setColor(Color.LIGHT_GRAY);
         else
-            g.setColor(tetraminoColors[currentPiece]);
-        for (Point p : Tetramino.Tetraminos[currentPiece][rotation]) {
-            g.fillRect((p.x + pieceOrigin.x) * blockSM, (p.y + pieceOrigin.y) * blockSM, blockSize, blockSize);
+            g.setColor(current.getColor());
+        for (Point p : current.getPoints()) {
+            g.fillRect((p.x + current.getOriginX()) * blockSM, (p.y + current.getOriginY()) * blockSM, blockSize,
+                    blockSize);
         }
     }
 
     private void drawNext(Graphics g) {
         for (int i = 0; i < nextNum; i++) {
-            int piece = nextPieces.get(i);
-            g.setColor(tetraminoColors[piece]);
-            for (Point p : Tetramino.Tetraminos[piece][0]) {
+            Tetramino piece = nextPieces.get(i);
+            g.setColor(piece.getColor());
+            for (Point p : piece.getPoints(0)) {
                 g.fillRect((p.x + boardWidth + 1) * blockSM, (p.y + 1 + 4 * i) * blockSM, blockSize, blockSize);
             }
         }
-        if (holdPiece >= 0) {
-            g.setColor(tetraminoColors[holdPiece]);
-            for (Point p : Tetramino.Tetraminos[holdPiece][0]) {
+        if (hold != null) {
+            g.setColor(hold.getColor());
+            for (Point p : hold.getPoints(0)) {
                 g.fillRect((p.x + boardWidth + 1) * blockSM, (p.y + 1 + 4 * nextNum) * blockSM, blockSize, blockSize);
             }
         }
@@ -369,6 +359,7 @@ public class Tetris extends JPanel {
         g.drawString("score:" + score, width / 2, blockSM);
         g.drawString("line:" + scoreLine, width / 2, blockSM * 2);
         g.drawString("HOLD", (boardWidth + 1) * blockSM, (nextNum * 4 + 1) * blockSM);
+        g.drawString("NEXT", (boardWidth + 1) * blockSM, blockSM);
 
         // Draw the currently falling piece
         drawShadow(g);

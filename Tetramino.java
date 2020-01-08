@@ -76,10 +76,6 @@ public class Tetramino {
 		return tetraminoColors[piece];
 	}
 
-	public void rotate(int i) {
-		this.rotation = i;
-	}
-
 	public void setRotation(int rotation){
 		this.rotation = rotation;
 	}
@@ -96,15 +92,18 @@ public class Tetramino {
 		return Tetraminos[piece][rotation];
 	}
 
-	public Point getOrigin(){
-		return pieceOrigin;
+	public int getOriginX(){
+		return pieceOrigin.x;
+	}
+	public int getOriginY(){
+		return pieceOrigin.y;
 	}
 
 	public void setOrigin(Point p){
 		pieceOrigin = p;
 	}
 
-	public void dropDown() {
-		pieceOrigin.y++;
+	public void moveOrigin(int moveX,int moveY){
+		pieceOrigin.move(pieceOrigin.x+moveX,pieceOrigin.y+moveY);
 	}
 }
