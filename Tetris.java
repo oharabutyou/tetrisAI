@@ -48,7 +48,7 @@ public class Tetris extends JPanel {
         score = 0;
         scoreLine = 0;
         ren = 0;
-        level = 10;
+        level = 1;
         BtoB = false;
         msg = "START!";
         counts = new long[5];
@@ -309,8 +309,8 @@ public class Tetris extends JPanel {
 
     private void addScore(int numClears) {
         msg = "";
-        boolean preBtoB=BtoB;
-        BtoB=false;
+        boolean preBtoB = BtoB;
+        BtoB = false;
         if (tspin) {
             counts[0]++;
             msg = "T-Spin ";
@@ -327,20 +327,26 @@ public class Tetris extends JPanel {
             break;
         case 1:
             score += 100 * level;
-            if (tspin)
-                {score += 100 * level;BtoB=true;}
+            if (tspin) {
+                score += 100 * level;
+                BtoB = true;
+            }
             msg += "single";
             break;
         case 2:
             score += 200 * level;
-            if (tspin)
-                {score += 200 * level;BtoB=true;}
+            if (tspin) {
+                score += 200 * level;
+                BtoB = true;
+            }
             msg += "double";
             break;
         case 3:
             score += 400 * level;
-            if (tspin)
-                {score += 400 * level;BtoB=true;}
+            if (tspin) {
+                score += 400 * level;
+                BtoB = true;
+            }
             msg += "triple";
             break;
         case 4:
@@ -352,8 +358,10 @@ public class Tetris extends JPanel {
         if (scoreLine % 10 + numClears >= 10)
             level++;
         scoreLine += numClears;
-        msg += " ren:"+ren;
-        if(BtoB&&preBtoB)msg+=" Back to Back!";
+        if (ren > 1)
+            msg += " ren:" + ren;
+        if (BtoB && preBtoB)
+            msg += " Back to Back!";
     }
 
     public long getSpeed() {
