@@ -310,16 +310,17 @@ public class Tetris extends JPanel {
     private void addScore(int numClears) {
         msg = "";
         boolean preBtoB = BtoB;
-        BtoB = false;
         if (tspin) {
             counts[0]++;
             msg = "T-Spin ";
         }
         if (numClears > 0) {
+            BtoB = false;
             counts[numClears]++;
             ren++;
         } else
             ren = 0;
+
         switch (numClears) {
         case 0:
             if (tspin)
@@ -327,26 +328,23 @@ public class Tetris extends JPanel {
             break;
         case 1:
             score += 100 * level;
-            if (tspin) {
+            if (tspin)
                 score += 100 * level;
-                BtoB = true;
-            }
+            BtoB = tspin;
             msg += "single";
             break;
         case 2:
             score += 200 * level;
-            if (tspin) {
+            if (tspin)
                 score += 200 * level;
-                BtoB = true;
-            }
+            BtoB = tspin;
             msg += "double";
             break;
         case 3:
             score += 400 * level;
-            if (tspin) {
+            if (tspin)
                 score += 400 * level;
-                BtoB = true;
-            }
+            BtoB = tspin;
             msg += "triple";
             break;
         case 4:
@@ -360,7 +358,7 @@ public class Tetris extends JPanel {
         scoreLine += numClears;
         if (ren > 1)
             msg += " ren:" + ren;
-        if (BtoB && preBtoB)
+        if (BtoB && preBtoB && numClears>0)
             msg += " Back to Back!";
     }
 
