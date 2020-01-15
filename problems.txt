@@ -7,9 +7,10 @@
 7ok.no timer reset
 8ok.shuffle block order
 9ok.shadow
-10.format codes
-11.super rotation system
-12.use class
-13.t-spin
+10ok.format codes
+11ok.super rotation system
+12ok.use class
+13ok.t-spin
 14.score ranking
 15.item
+16.battle

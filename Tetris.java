@@ -16,11 +16,20 @@ public class Tetris extends JPanel {
     private ArrayList<Tetramino> nextPieces = new ArrayList<>();
     private boolean canHold;
     private boolean nearFix;
+    private boolean tspin;
     private boolean gameOver;
 
     private long score;
     private long scoreLine;
+    private long level;
+    private String msg;
+    private long ren;
+    private boolean BtoB;
     private Color[][] well;
+    /**
+     * 0->tspin,1->single,2->double,3->triple,4->tetris
+     */
+    private long[] counts;
 
     public static final int boardWidth = 12;
     public static final int boardHeight = 23;
@@ -31,15 +40,22 @@ public class Tetris extends JPanel {
     public static final int height = boardHeight * blockSM;
 
     /**
-     * Creates a border around the well and initializes the dropping piece
+     * Creates a border around the well and initializes the dropping piece and
+     * paramater
      */
     public void init() {
         gameOver = false;
         score = 0;
         scoreLine = 0;
+        ren = 0;
+        level = 10;
+        BtoB = false;
+        msg = "START!";
+        counts = new long[5];
         nearFix = false;
         hold = null;
         canHold = true;
+        tspin = false;
         nextPieces.clear();
         setBounds(0, 0, width + 2 + blockSM * 6, height + 30);
         well = new Color[boardWidth][boardHeight];
@@ -68,7 +84,6 @@ public class Tetris extends JPanel {
             }
         }
         current = nextPieces.remove(0);
-        current.setRotation(0);
         current.setOrigin(new Point(5, 2));
         if (collidesAt(0, 0, current.getRotation()))
             return false;
@@ -87,11 +102,22 @@ public class Tetris extends JPanel {
         for (Point p : current.getPoints(rotation)) {
             int x = p.x + current.getOriginX() + moveX;
             int y = p.y + current.getOriginY() + moveY;
-            if (well[x][y] != Color.BLACK) {
+            if (x < 0 || y < 0 || x >= boardWidth || y >= boardHeight || well[x][y] != Color.BLACK) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Collision test for super rotation system
+     * 
+     * @param movePoint
+     * @param rotation
+     * @return
+     */
+    private boolean collidesAt(Point movePoint, int rotation) {
+        return collidesAt(movePoint.x, movePoint.y, rotation);
     }
 
     /**
@@ -106,12 +132,28 @@ public class Tetris extends JPanel {
         if (newRotation < 0) {
             newRotation = 3;
         }
-        if (!collidesAt(0, 0, newRotation)) {
-            current.setRotation(newRotation);
-            rotated = true;
+        for (int n = 0; n < Tetramino.SRSnum; n++) {
+            Point srs = current.getSRS(i, n);
+            if (!collidesAt(srs, newRotation)) {
+                current.setRotation(newRotation);
+                current.moveOrigin(srs.x, srs.y);
+                rotated = true;
+                if (current.isT())
+                    checkTspin();
+                break;
+            }
         }
         repaint();
         return !setNearFix() && rotated;
+    }
+
+    private boolean checkTspin() {
+        int count = 0;
+        for (int i = 0; i < 4; i++) {
+            if (well[current.getOriginX() + (i / 2) * 2][current.getOriginY() + (i % 2) * 2] != Color.black)
+                count++;
+        }
+        return tspin = count >= 3;
     }
 
     /**
@@ -140,6 +182,7 @@ public class Tetris extends JPanel {
             fixToWell();
             fix = true;
         }
+        tspin = false;
         setNearFix();
         repaint();
         return fix;
@@ -208,7 +251,8 @@ public class Tetris extends JPanel {
         clearRows();
         nearFix = false;
         canHold = true;
-        if (!newPiece()) {
+        if (!newPiece() || scoreLine >= 20) {
+            msg = "Gameover!Score:" + score;
             System.out.println("Gameover!Score:" + score);
             gameOver = true;
         }
@@ -242,7 +286,7 @@ public class Tetris extends JPanel {
      * Clear completed rows from the field and award score according to the number
      * of simultaneously cleared rows.
      */
-    public void clearRows() {
+    private void clearRows() {
         boolean gap;
         int numClears = 0;
 
@@ -260,26 +304,56 @@ public class Tetris extends JPanel {
                 numClears += 1;
             }
         }
-
-        switch (numClears) {
-        case 1:
-            score += 100 * scoreLine / 10;
-            break;
-        case 2:
-            score += 300 * scoreLine / 10;
-            break;
-        case 3:
-            score += 500 * scoreLine / 10;
-            break;
-        case 4:
-            score += 800 * scoreLine / 10;
-            break;
-        }
-        scoreLine += numClears;
+        addScore(numClears);
     }
 
-    public long getScoreLine() {
-        return scoreLine;
+    private void addScore(int numClears) {
+        msg = "";
+        boolean preBtoB=BtoB;
+        BtoB=false;
+        if (tspin) {
+            counts[0]++;
+            msg = "T-Spin ";
+        }
+        if (numClears > 0) {
+            counts[numClears]++;
+            ren++;
+        } else
+            ren = 0;
+        switch (numClears) {
+        case 0:
+            if (tspin)
+                score += 100 * level;
+            break;
+        case 1:
+            score += 100 * level;
+            if (tspin)
+                {score += 100 * level;BtoB=true;}
+            msg += "single";
+            break;
+        case 2:
+            score += 200 * level;
+            if (tspin)
+                {score += 200 * level;BtoB=true;}
+            msg += "double";
+            break;
+        case 3:
+            score += 400 * level;
+            if (tspin)
+                {score += 400 * level;BtoB=true;}
+            msg += "triple";
+            break;
+        case 4:
+            score += 800 * level;
+            BtoB = true;
+            msg += "TETRIS!";
+            break;
+        }
+        if (scoreLine % 10 + numClears >= 10)
+            level++;
+        scoreLine += numClears;
+        msg += " ren:"+ren;
+        if(BtoB&&preBtoB)msg+=" Back to Back!";
     }
 
     public long getSpeed() {
@@ -288,7 +362,6 @@ public class Tetris extends JPanel {
         } else {
             // return 1000 - scoreLine / 10 * 50;
             long speed = 1000;
-            long level = scoreLine / 10;
             for (int i = 0; i < level; i++) {
                 speed = speed * 3 / 4;
             }
@@ -356,13 +429,15 @@ public class Tetris extends JPanel {
 
         // Display the score
         g.setColor(Color.WHITE);
+        g.drawString(msg, blockMargin, blockSM);
         g.drawString("score:" + score, width / 2, blockSM);
-        g.drawString("line:" + scoreLine, width / 2, blockSM * 2);
+        g.drawString("line:" + scoreLine + " level:" + level, width / 2, blockSM * 2);
         g.drawString("HOLD", (boardWidth + 1) * blockSM, (nextNum * 4 + 1) * blockSM);
         g.drawString("NEXT", (boardWidth + 1) * blockSM, blockSM);
 
         // Draw the currently falling piece
-        drawShadow(g);
+        if (!gameOver)
+            drawShadow(g);
         drawPiece(g);
         drawNext(g);
     }
