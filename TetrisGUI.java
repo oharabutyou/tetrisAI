@@ -13,7 +13,7 @@ public class TetrisGUI {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         int windowFrameX = 22;
         int windowFrameY = 56;
-        f.setSize(Tetris.width + Tetris.blockSM*4+windowFrameX, Tetris.height+windowFrameY);
+        f.setSize(Tetris.width + Tetris.blockSM * 4 + windowFrameX, Tetris.height + windowFrameY);
         f.setVisible(true);
 
         final Tetris game = new Tetris();
@@ -68,8 +68,8 @@ public class TetrisGUI {
                     case KeyEvent.VK_SPACE:
                     case KeyEvent.VK_S:
                     case KeyEvent.VK_DOWN:
-                        if(game.fastDrop())
-                        th.interrupt();
+                        if (game.fastDrop())
+                            th.interrupt();
                         break;
                     case KeyEvent.VK_UP:
                     case KeyEvent.VK_W:

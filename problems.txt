@@ -14,3 +14,5 @@
 14.score ranking
 15.item
 16.battle
+17.timer
+18.score system
