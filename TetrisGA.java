@@ -95,7 +95,7 @@ public class TetrisGA {
             }
             TetrisScore score = game.score();
             if (score.getLines() > 0) {
-                currentGen.add(new Individual(i, score.getScore(), score.getLines()));
+                nextGen.add(new Individual(i, score.getScore(), score.getLines()));
                 indivi++;
                 System.out.println(indivi);
             }

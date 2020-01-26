@@ -7,11 +7,11 @@ public class Individual implements Comparable<Individual>{
 	@Override
 	public int compareTo(Individual o) {
         if(lines==o.lines){
-            if(score<o.score)return -1;
+            if(score>o.score)return -1;
             else if(score==o.score)return 0;
             else return 1;
         }else{
-            return (lines<o.lines)?-1:1;
+            return (lines>o.lines)?-1:1;
         }
 	}
 
