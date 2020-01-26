@@ -113,7 +113,7 @@ public class TetrisGA {
                 lines += score.getLines();
                 scores += score.getScore();
             }
-            currentGen.add(new Individual(ai.getWeight(), scores, lines));
+            nextGen.add(new Individual(ai.getWeight(), scores, lines));
             indivi++;
             System.out.println(indivi);
         }
