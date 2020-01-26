@@ -35,6 +35,14 @@ public class TetrisGA {
         game.initAI(ai);
     }
 
+    public double[][] getInputWeight(){
+        return inputWeight;
+    }
+
+    public double[] getOutputWeight(){
+        return outputWeight;
+    }
+
     public void startSearch() {
         game = new Tetris();
         firstGen();

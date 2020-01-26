@@ -17,8 +17,10 @@ public class TetrisAITest {
         f.setSize(Tetris.width + Tetris.blockSM * 4 + windowFrameX, Tetris.height + windowFrameY);
         f.setVisible(true);
 
+        TetrisGA ga = new TetrisGA(50, 10);
+        ga.startSearch();
         final Tetris game = new Tetris();
-        game.initAI(new TetrisAI());
+        game.initAI(new TetrisAI(ga.getInputWeight(),ga.getOutputWeight()));
         f.add(game);
         Thread th = new Thread() {
             @Override
@@ -38,7 +40,7 @@ public class TetrisAITest {
                             Thread.sleep(Long.MAX_VALUE);
                     } catch (InterruptedException e) {
                     }*/
-                    game.initAI(new TetrisAI());
+                    game.initAI(new TetrisAI(ga.getInputWeight(),ga.getOutputWeight()));
                 }
             }
         };
@@ -61,7 +63,7 @@ public class TetrisAITest {
                 } else {
                     switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
-                        game.initAI(new TetrisAI());
+                        game.initAI(new TetrisAI(ga.getInputWeight(),ga.getOutputWeight()));
                         th.interrupt();
                         break;
                     default:
