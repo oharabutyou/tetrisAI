@@ -107,7 +107,7 @@ public class Tetramino {
 	/**
 	 * 0->T,1:->S,2->Z,3->L,4->J,5->O,6->I
 	 */
-	public int piece;
+	private int piece;
 	private int rotation;
 	private Point pieceOrigin;
 
@@ -118,6 +118,10 @@ public class Tetramino {
 
 	public boolean isT(){
 		return piece==0;
+	}
+
+	public int getPiece(){
+		return piece;
 	}
 
 	public Color getColor() {

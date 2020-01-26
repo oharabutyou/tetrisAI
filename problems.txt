@@ -15,4 +15,4 @@
 15.item
 16.battle
 17.timer
-18.score system
+18ok.score system

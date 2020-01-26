@@ -9,6 +9,7 @@ public class TetrisScore {
     private long score;
     private long scoreLine;
     private long level;
+    private long speed;
     private String msg;
 
     /**
@@ -28,6 +29,10 @@ public class TetrisScore {
         score = 0;
         scoreLine = 0;
         this.level = level;
+        speed = 1000;
+        for (int i = 1; i < level; i++) {
+            speed = speed * 3 / 4;
+        }
         msg = "START!";
         counts = new long[5];
         countBtoB = 0;
@@ -75,8 +80,8 @@ public class TetrisScore {
     /**
      * for fastDrop and hardDrop
      */
-    public void increment() {
-        score++;
+    public void increment(int i) {
+        score+=i;
     }
 
     /**
@@ -88,6 +93,12 @@ public class TetrisScore {
         return tspin = isTspin;
     }
 
+    /**
+     * This method uses tspin param and level. It counts clearLines, T-Spins, BtoBs
+     * and RENs. It sets level and msg.
+     * 
+     * @param numClears
+     */
     public void addScore(int numClears) {
         msg = "";
         boolean preBtoB = BtoB;
@@ -136,13 +147,18 @@ public class TetrisScore {
             msg += "TETRIS!";
             break;
         }
-        if (scoreLine % 10 + numClears >= 10)
+        if (scoreLine % 10 + numClears >= 10) {
             level++;
+            speed = speed * 3 / 4;
+        }
         scoreLine += numClears;
-        if (REN > 1)
+        if (REN > 1) {
             msg += " REN:" + REN;
+            score += 100 * level * REN;
+        }
         if (BtoB && preBtoB && numClears > 0) {
             msg += " Back to Back!";
+            score += 200 * level;
             countBtoB++;
         }
     }

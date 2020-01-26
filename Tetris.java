@@ -20,6 +20,7 @@ public class Tetris extends JPanel {
 
     private TetrisScore score;
     private Color[][] well;
+    private TetrisAI ai;
 
     public static final int boardWidth = 12;
     public static final int boardHeight = 23;
@@ -38,7 +39,7 @@ public class Tetris extends JPanel {
         nearFix = false;
         hold = null;
         canHold = true;
-        score = new TetrisScore(1);
+        score = new TetrisScore(50);
         nextPieces.clear();
         setBounds(0, 0, width + 2 + blockSM * 6, height + 30);
         well = new Color[boardWidth][boardHeight];
@@ -71,6 +72,18 @@ public class Tetris extends JPanel {
         if (collidesAt(0, 0, current.getRotation()))
             return false;
         return true;
+    }
+
+    public Tetramino getNextPiece(){
+        while (nextPieces.size() <= nextNum) {
+            ArrayList<Integer> news = new ArrayList<>();
+            Collections.addAll(news, 0, 1, 2, 3, 4, 5, 6);
+            Collections.shuffle(news);
+            for (Integer integer : news) {
+                nextPieces.add(new Tetramino(integer));
+            }
+        }
+        return nextPieces.get(0);
     }
 
     /**
@@ -194,13 +207,13 @@ public class Tetris extends JPanel {
     public boolean fastDrop() {
         if (!nearFix)
             if (!dropDown())
-                score.increment();
+                score.increment(1);
         return !nearFix;
     }
 
     public void hardDrop() {
         while (!dropDown()) {
-            score.increment();
+            score.increment(2);
         }
     }
 
@@ -374,5 +387,33 @@ public class Tetris extends JPanel {
             drawShadow(g);
         drawPiece(g);
         drawNext(g);
+    }
+
+    public void initAI(TetrisAI ai) {
+        this.ai = ai;
+        init();
+    }
+
+    public void AIPlay() {
+        Color[][] cpy = well.clone();
+        for (int i = 0; i < cpy.length; i++) {
+            cpy[i] = well[i].clone();
+        }
+        TetrisCtrl ctrl = ai.ctrl(cpy, current.getPiece(), getNextPiece().getPiece());
+        if(ctrl!=null)AICtrl(ctrl);else dropDown();
+    }
+
+    public void AICtrl(TetrisCtrl ctrl) {
+        current.setRotation(ctrl.getRotation());
+        current.setOrigin(new Point(ctrl.getPieceOriginX(), current.getOriginY()));
+        hardDrop();
+    }
+
+    public long getLines(){
+        return score.getLines();
+    }
+
+    public TetrisScore score(){
+        return score;
     }
 }
