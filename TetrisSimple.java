@@ -105,7 +105,7 @@ public class TetrisSimple {
 
     public void hardDrop() {
         while (!dropDown()) {
-            score += 2;
+            //score += 2;
         }
     }
 

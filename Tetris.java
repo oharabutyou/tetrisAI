@@ -75,7 +75,7 @@ public class Tetris extends JPanel {
     }
 
     public Tetramino getNextPiece(){
-        while (nextPieces.size() <= nextNum) {
+        while (nextPieces.size() <= nextNum+1) {
             ArrayList<Integer> news = new ArrayList<>();
             Collections.addAll(news, 0, 1, 2, 3, 4, 5, 6);
             Collections.shuffle(news);
