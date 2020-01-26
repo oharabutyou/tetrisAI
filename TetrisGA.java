@@ -91,8 +91,10 @@ public class TetrisGA {
             if (lines > 0) {
                 currentGen.add(new Individual(ai.getWeight(), scores, lines));
                 indivi++;
+                System.out.print(indivi+" ");
             }
         }
+        System.out.println();
         Collections.sort(currentGen);
         Individual top = currentGen.get(0);
         System.out.println("top in firstGen:" + top.getLines() + "," + top.getScore());
@@ -131,7 +133,9 @@ public class TetrisGA {
             }
             nextGen.add(new Individual(ai.getWeight(), scores, lines));
             indivi++;
+            System.out.print(indivi+" ");
         }
+        System.out.println();
         Collections.sort(nextGen);
         currentGen = nextGen;
     }
