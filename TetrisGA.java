@@ -28,13 +28,6 @@ public class TetrisGA {
         game = new Tetris();
     }
 
-    public static void main(String[] args) {
-        TetrisGA ga = new TetrisGA(100, 50);
-        ga.startSearch();
-        TetrisAI ai = new TetrisAI(ga.inputWeight, ga.outputWeight);
-        game.initAI(ai);
-    }
-
     public double[][] getInputWeight() {
         return inputWeight;
     }
@@ -52,6 +45,9 @@ public class TetrisGA {
             System.out.println("top in " + gen + ":" + top.getLines() + "," + top.getScore());
             printWeights(top);
         }
+        Individual top = nextGen.get(0);
+        inputWeight=top.getInputWeight();
+        outputWeight = top.getOutputWeight();
     }
 
     private void printWeights(Individual ind) {
