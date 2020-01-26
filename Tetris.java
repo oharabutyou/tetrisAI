@@ -247,7 +247,7 @@ public class Tetris extends JPanel {
         clearRows();
         nearFix = false;
         canHold = true;
-        if (!newPiece() || score.getLines() >= 20) {
+        if (!newPiece() || score.getLines() >= 50) {
             score.gameOver();
             //System.out.println("Gameover!\n" + score.getResult());
             gameOver = true;

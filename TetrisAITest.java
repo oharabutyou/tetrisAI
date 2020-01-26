@@ -17,7 +17,7 @@ public class TetrisAITest {
         f.setSize(Tetris.width + Tetris.blockSM * 4 + windowFrameX, Tetris.height + windowFrameY);
         f.setVisible(true);
 
-        TetrisGA ga = new TetrisGA(50, 10);
+        TetrisGA ga = new TetrisGA(50, 2);
         ga.startSearch();
         final Tetris game = new Tetris();
         game.initAI(new TetrisAI(ga.getInputWeight(),ga.getOutputWeight()));

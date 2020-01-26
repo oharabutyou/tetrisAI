@@ -35,11 +35,11 @@ public class TetrisGA {
         game.initAI(ai);
     }
 
-    public double[][] getInputWeight(){
+    public double[][] getInputWeight() {
         return inputWeight;
     }
 
-    public double[] getOutputWeight(){
+    public double[] getOutputWeight() {
         return outputWeight;
     }
 
@@ -48,7 +48,7 @@ public class TetrisGA {
         firstGen();
         for (int gen = 1; gen < generations; gen++) {
             nextGen();
-            System.out.println(gen);
+            System.out.println("top in " + gen + ":" + nextGen.get(0).getLines() + "," + nextGen.get(0).getScore());
         }
         inputWeight = nextGen.get(0).getInputWeight();
         outputWeight = nextGen.get(0).getOutputWeight();
