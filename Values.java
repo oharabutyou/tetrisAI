@@ -71,4 +71,12 @@ public class Values {
                 HoleDepth, RowsWithHoles };
         return values;
     }
+
+    @Override
+    public String toString() {
+        return "Values [ColTransitions=" + ColTransitions + ", CumulativeWells=" + CumulativeWells
+                + ", ErodedPieceCells=" + ErodedPieceCells + ", HoleDepth=" + HoleDepth + ", LandingHeight="
+                + LandingHeight + ", NumHoles=" + NumHoles + ", RowTransitions=" + RowTransitions + ", RowsWithHoles="
+                + RowsWithHoles + "]";
+    }
 }

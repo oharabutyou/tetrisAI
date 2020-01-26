@@ -18,7 +18,7 @@ public class TetrisAITest {
         f.setVisible(true);
 
         final Tetris game = new Tetris();
-        game.initAI(new TetrisAIeasy());
+        game.initAI(new TetrisAI());
         f.add(game);
         Thread th = new Thread() {
             @Override
@@ -38,7 +38,7 @@ public class TetrisAITest {
                             Thread.sleep(Long.MAX_VALUE);
                     } catch (InterruptedException e) {
                     }*/
-                    game.initAI(new TetrisAIeasy());
+                    game.initAI(new TetrisAI());
                 }
             }
         };
@@ -61,7 +61,7 @@ public class TetrisAITest {
                 } else {
                     switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
-                        game.initAI(new TetrisAIeasy());
+                        game.initAI(new TetrisAI());
                         th.interrupt();
                         break;
                     default:

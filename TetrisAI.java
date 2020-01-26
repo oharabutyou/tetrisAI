@@ -77,13 +77,9 @@ public class TetrisAI {
         setRandomWeight();
     }
 
-    public TetrisAI(double[][] inputWeight,double[] outputWeight){
+    public TetrisAI(double[][] inputWeight, double[] outputWeight) {
         this.inputWeight = inputWeight;
         this.outputWeight = outputWeight;
-    }
-
-    public void GAsearch() {
-        return;
     }
 
     private void setRandomWeight() {
@@ -98,14 +94,15 @@ public class TetrisAI {
         }
     }
 
-    private double evalue(int[] values) {
+    private double evalue(Values values) {
         if (values == null)
             return Double.NEGATIVE_INFINITY;
+        int[] vals = values.getValues();
         double sum = 0.0;
         for (int j = 0; j < midUnitNum; j++) {
             double unitSum = 0.0;
-            for (int i = 0; i < values.length; i++) {
-                unitSum += values[i] * inputWeight[i][j];
+            for (int i = 0; i < vals.length; i++) {
+                unitSum += vals[i] * inputWeight[i][j];
             }
             sum += unitSum * outputWeight[j];
         }
@@ -140,13 +137,20 @@ public class TetrisAI {
                 }
             }
         }
+        Color[][] addCurrent = well.clone();
+        for (int i = 0; i < addCurrent.length; i++) {
+            addCurrent[i] = well[i].clone();
+        }
+        Values print = addPiece(addCurrent, currentPiece, ctrlX, ctrlRotation);
+        if(print!=null)
+        System.out.println(print.toString());
         if (maxValue != Double.NEGATIVE_INFINITY)
             return new TetrisCtrl(ctrlX, ctrlRotation);
         else
             return null;
     }
 
-    private int[] addPiece(Color[][] well, int piece, int pieceOriginX, int rotation) {
+    private Values addPiece(Color[][] well, int piece, int pieceOriginX, int rotation) {
 
         Values values = new Values();
 
@@ -190,48 +194,72 @@ public class TetrisAI {
         }
         values.setErodedPieceCells(numClears * erodedPiece);
 
+        boolean[][] boolWell = setBoolWell(well);
+        holeSize(well, boolWell, 1, 1);
+
+        // scan by col
+        int colTransitions = 0;
+        int holeDepth = 0;
+        int[] colsHeight = new int[boardWidth];
+        for (int i = 1; i < boardWidth - 1; i++) {
+            boolean trans = (well[i][1] == Color.BLACK);
+            int depth = 0;
+            for (int j = 1; j < boardHeight - 1; j++) {
+                boolean next = (well[i][j] == Color.BLACK);
+                if (trans != next) {
+                    colTransitions++;
+                    if (next) {
+                        holeDepth += depth;
+                        depth = 0;
+                    }
+                }
+                if (!next) {
+                    depth++;
+                    if (colsHeight[i] == 0)
+                        colsHeight[i] = boardHeight - j - 1;
+                }
+                trans = next;
+            }
+        }
+        values.setColTransitions(colTransitions);
+        values.setHoleDepth(holeDepth);
+
+        int cumulativeWells = 0;
+        colsHeight[0]=boardHeight;
+        colsHeight[boardWidth-1]=boardHeight;
+        for (int i = 1; i < boardWidth - 1; i++) {
+            int height = (colsHeight[i - 1] < colsHeight[i + 1]) ? (colsHeight[i - 1]) : (colsHeight[i + 1]);
+            height -= colsHeight[i];
+            for (; height > 0; height--) {
+                cumulativeWells += height;
+            }
+        }
+        values.setCumulativeWells(cumulativeWells);
+
         // scan by row
         int rowTransitions = 0;
         int numHoles = 0;
         int rowsWithHoles = 0;
         for (int j = boardHeight - 2; j > 0; j--) {
             boolean trans = (well[1][j] == Color.BLACK);
-            int hole = 0;
             for (int i = 1; i < boardWidth - 1; i++) {
                 boolean next = (well[i][j] == Color.BLACK);
                 if (trans != next)
                     rowTransitions++;
                 trans = next;
-                if (next && well[i][j - 1] != Color.BLACK && well[i][j + 1] != Color.BLACK
-                        && well[i - 1][j] != Color.BLACK && well[i + 1][j] != Color.BLACK)
-                    hole++;
+                if (next && !boolWell[i][j]) {
+                    if (rowsWithHoles == 0)
+                        rowsWithHoles = boardHeight - j - 1;
+                    holeSize(well, boolWell, i, j);
+                    numHoles++;
+                }
             }
-            numHoles += hole;
-            if (hole != 0)
-                rowsWithHoles++;
         }
         values.setRowTransitions(rowTransitions);
         values.setNumHoles(numHoles);
         values.setRowsWithHoles(rowsWithHoles);
-
-        // scan by col
-        int colTransitions = 0;
-        int cumulativeWells = 0;
-        int holeDepth = 0;
-        for (int i = 1; i < boardWidth - 1; i++) {
-            boolean trans = (well[i][1]==Color.BLACK);
-            for (int j = 1; j < boardHeight - 1; j++) {
-                boolean next = (well[i][j]==Color.BLACK);
-                if(trans!=next)colTransitions++;
-                trans=next;
-            }
-        }
-        values.setColTransitions(colTransitions);
-        values.setCumulativeWells(cumulativeWells);
-        values.setHoleDepth(holeDepth);
-
         // return values
-        return values.getValues();
+        return values;
     }
 
     private void deleteRow(Color[][] well, int row) {
@@ -250,5 +278,38 @@ public class TetrisAI {
             }
         }
         return false;
+    }
+
+    private boolean[][] setBoolWell(Color[][] well) {
+        // return if scanning is not necessary
+        boolean[][] boolWell = new boolean[well.length][well[0].length];
+        for (int i = 0; i < well.length; i++) {
+            for (int j = 0; j < well[i].length; j++) {
+                if (well[i][j] == Color.BLACK)
+                    boolWell[i][j] = false;
+                else
+                    boolWell[i][j] = true;
+            }
+        }
+        return boolWell;
+    }
+
+    private int holeSize(Color[][] well, boolean[][] boolWell, int x, int y) {
+        if (x < 0 || y < 0 || x >= boardWidth || y >= boardHeight || boolWell[x][y])
+            return 0;
+        else {
+            boolWell[x][y] = true;
+            return 1 + holeSize(well, boolWell, x - 1, y) + holeSize(well, boolWell, x, y - 1)
+                    + holeSize(well, boolWell, x + 1, y) + holeSize(well, boolWell, x, y + 1);
+        }
+    }
+    public double[][] getInputWeight(){
+        return inputWeight;
+    }
+    public double[] getOutputWeight(){
+        return outputWeight;
+    }
+    public Individual getWeight(){
+        return new Individual(inputWeight, outputWeight);
     }
 }
