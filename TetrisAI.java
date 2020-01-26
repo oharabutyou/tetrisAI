@@ -137,13 +137,6 @@ public class TetrisAI {
                 }
             }
         }
-        Color[][] addCurrent = well.clone();
-        for (int i = 0; i < addCurrent.length; i++) {
-            addCurrent[i] = well[i].clone();
-        }
-        Values print = addPiece(addCurrent, currentPiece, ctrlX, ctrlRotation);
-        if(print!=null)
-        System.out.println(print.toString());
         if (maxValue != Double.NEGATIVE_INFINITY)
             return new TetrisCtrl(ctrlX, ctrlRotation);
         else
