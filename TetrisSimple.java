@@ -146,7 +146,7 @@ public class TetrisSimple {
         boolean gap;
         int numClears = 0;
 
-        for (int j = pieceHeight; j > 0; j--) {
+        for (int j = pieceHeight; j >= 0; j--) {
             gap = false;
             for (int i = 1; i < boardWidth - 1; i++) {
                 if (well[i][current.getOriginY() + j] == Color.BLACK) {
@@ -155,7 +155,7 @@ public class TetrisSimple {
                 }
             }
             if (!gap) {
-                deleteRow(j);
+                deleteRow(current.getOriginY()+j);
                 j += 1;
                 numClears += 1;
             }
