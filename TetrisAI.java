@@ -148,7 +148,7 @@ public class TetrisAI {
         Values values = new Values();
 
         // try dropping piece
-        int pieceOriginY = 2;
+        int pieceOriginY = 3;
         if (collidesAt(well, pieceOriginX, pieceOriginY, rotation, piece))
             return null;
         while (!collidesAt(well, pieceOriginX, pieceOriginY + 1, rotation, piece))

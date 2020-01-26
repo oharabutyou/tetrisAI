@@ -15,7 +15,7 @@ public class TetrisGA {
     private double[] outputWeight;
     private ArrayList<Individual> currentGen;
     private ArrayList<Individual> nextGen;
-    private static Tetris game;
+    private static TetrisSimple game;
     private static Random rand = new Random();
     private long genSum;
     private int inputUnit;
@@ -25,7 +25,7 @@ public class TetrisGA {
     public TetrisGA(int individuals, int generations) {
         this.individuals = individuals;
         this.generations = generations;
-        game = new Tetris();
+        game = new TetrisSimple();
     }
 
     public double[][] getInputWeight() {
@@ -37,33 +37,33 @@ public class TetrisGA {
     }
 
     public void startSearch() {
-        game = new Tetris();
+        game = new TetrisSimple();
         firstGen();
         for (int gen = 1; gen < generations; gen++) {
             nextGen();
-            Individual top=nextGen.get(0);
+            Individual top = nextGen.get(0);
             System.out.println("top in " + gen + ":" + top.getLines() + "," + top.getScore());
             printWeights(top);
         }
         Individual top = nextGen.get(0);
-        inputWeight=top.getInputWeight();
+        inputWeight = top.getInputWeight();
         outputWeight = top.getOutputWeight();
     }
 
     private void printWeights(Individual ind) {
-        double[][] inputWeight=ind.getInputWeight();
-        double[] outputWeight=ind.getOutputWeight();
+        double[][] inputWeight = ind.getInputWeight();
+        double[] outputWeight = ind.getOutputWeight();
         // print weights
         System.out.println("inputWeight:");
-        for(int i=0;i<inputWeight.length;i++){
-            for(int j=0;j<inputWeight[i].length;j++){
-                System.out.print(inputWeight[i][j]+",");
+        for (int i = 0; i < inputWeight.length; i++) {
+            for (int j = 0; j < inputWeight[i].length; j++) {
+                System.out.print(inputWeight[i][j] + ",");
             }
             System.out.println();
         }
         System.out.println("outputWeight:");
-        for(int i=0;i<outputWeight.length;i++){
-            System.out.print(outputWeight[i]+",");
+        for (int i = 0; i < outputWeight.length; i++) {
+            System.out.print(outputWeight[i] + ",");
         }
         System.out.println();
     }
@@ -80,14 +80,13 @@ public class TetrisGA {
                 while (!game.isGameOver()) {
                     game.AIPlay();
                 }
-                TetrisScore score = game.score();
-                lines += score.getLines();
-                scores += score.getScore();
+                lines += game.getLines();
+                scores += game.getScore();
             }
             if (lines > 0) {
                 currentGen.add(new Individual(ai.getWeight(), scores, lines));
                 indivi++;
-                System.out.print(indivi+" ");
+                System.out.print(indivi + " ");
             }
         }
         System.out.println();
@@ -111,7 +110,7 @@ public class TetrisGA {
             Individual i;
             if (indivi < copy) {
                 i = currentGen.get(indivi);
-            } else if (indivi < copy+mutation) {
+            } else if (indivi < copy + mutation) {
                 i = mutation(select());
             } else
                 i = crossOver(select(), select());
@@ -123,13 +122,12 @@ public class TetrisGA {
                 while (!game.isGameOver()) {
                     game.AIPlay();
                 }
-                TetrisScore score = game.score();
-                lines += score.getLines();
-                scores += score.getScore();
+                lines += game.getLines();
+                scores += game.getScore();
             }
             nextGen.add(new Individual(ai.getWeight(), scores, lines));
             indivi++;
-            System.out.print(indivi+" ");
+            System.out.print(indivi + " ");
         }
         System.out.println();
         Collections.sort(nextGen);
