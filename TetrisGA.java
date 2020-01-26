@@ -62,12 +62,18 @@ public class TetrisGA {
         while (indivi < individuals) {
             TetrisAI ai = new TetrisAI();
             game.initAI(ai);
-            while (!game.isGameOver()) {
-                game.AIPlay();
+            long lines = 0;
+            long scores = 0;
+            for (int i = 0; i < 100; i++) {
+                while (!game.isGameOver()) {
+                    game.AIPlay();
+                }
+                TetrisScore score = game.score();
+                lines += score.getLines();
+                scores += score.getScore();
             }
-            TetrisScore score = game.score();
-            if (score.getLines() > 0) {
-                currentGen.add(new Individual(ai.getWeight(), score.getScore(), score.getLines()));
+            if (lines > 0) {
+                currentGen.add(new Individual(ai.getWeight(), scores, lines));
                 indivi++;
                 System.out.println(indivi);
             }
@@ -88,25 +94,28 @@ public class TetrisGA {
             genSum += i.getLines();
         }
         while (indivi < individuals) {
-            double random = rand.nextDouble();
             Individual i;
-            if (random < crossOver) {
-                i = crossOver(select(), select());
-            } else if (random < (crossOver + mutation)) {
+            if (indivi < 5) {
+                i = currentGen.get(indivi);
+            } else if (indivi < 6) {
                 i = mutation(select());
             } else
-                i = select();
+                i = crossOver(select(), select());
             TetrisAI ai = new TetrisAI(i.getInputWeight(), i.getOutputWeight());
             game.initAI(ai);
-            while (!game.isGameOver()) {
-                game.AIPlay();
+            long lines = 0;
+            long scores = 0;
+            for (int repeat = 0; repeat < 100; repeat++) {
+                while (!game.isGameOver()) {
+                    game.AIPlay();
+                }
+                TetrisScore score = game.score();
+                lines += score.getLines();
+                scores += score.getScore();
             }
-            TetrisScore score = game.score();
-            if (score.getLines() > 0) {
-                nextGen.add(new Individual(i, score.getScore(), score.getLines()));
-                indivi++;
-                System.out.println(indivi);
-            }
+            currentGen.add(new Individual(ai.getWeight(), scores, lines));
+            indivi++;
+            System.out.println(indivi);
         }
         Collections.sort(nextGen);
         currentGen = nextGen;

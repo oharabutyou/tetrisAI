@@ -35,10 +35,10 @@ public class Individual implements Comparable<Individual>{
     }
 
     public double[][] getInputWeight(){
-        return inputWeight;
+        return inputWeight.clone();
     }
     public double[] getOutputWeight(){
-        return outputWeight;
+        return outputWeight.clone();
     }
 
     public long getLines(){
