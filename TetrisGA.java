@@ -40,6 +40,7 @@ public class TetrisGA {
         firstGen();
         for (int gen = 1; gen < generations; gen++) {
             nextGen();
+            System.out.println(gen);
         }
         inputWeight = nextGen.get(0).getInputWeight();
         outputWeight = nextGen.get(0).getOutputWeight();
@@ -96,6 +97,7 @@ public class TetrisGA {
             if (score.getLines() > 0) {
                 currentGen.add(new Individual(i, score.getScore(), score.getLines()));
                 indivi++;
+                System.out.println(indivi);
             }
         }
         Collections.sort(nextGen);
