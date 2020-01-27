@@ -7,7 +7,6 @@ import java.util.Random;
  */
 public class TetrisGA {
 
-    private static final int mutation = 1;
     private static final int copy = 5;
     private int individuals;
     private int generations;
@@ -15,17 +14,25 @@ public class TetrisGA {
     private double[] outputWeight;
     private ArrayList<Individual> currentGen;
     private ArrayList<Individual> nextGen;
-    private static TetrisSimple game;
     private static Random rand = new Random();
     private long genSum;
     private int inputUnit;
     private int midUnit;
     private int inputWeightSize;
+    private long lines;
+    private long scores;
 
     public TetrisGA(int individuals, int generations) {
         this.individuals = individuals;
         this.generations = generations;
-        game = new TetrisSimple();
+    }
+
+    void addLines(long lines) {
+        this.lines += lines;
+    }
+
+    void addScores(long scores) {
+        this.scores += scores;
     }
 
     public double[][] getInputWeight() {
@@ -37,7 +44,6 @@ public class TetrisGA {
     }
 
     public void startSearch() {
-        game = new TetrisSimple();
         firstGen();
         for (int gen = 1; gen < generations; gen++) {
             nextGen();
@@ -73,15 +79,30 @@ public class TetrisGA {
         int indivi = 0;
         while (indivi < individuals) {
             TetrisAI ai = new TetrisAI();
-            long lines = 0;
-            long scores = 0;
-            for (int i = 0; i < 100; i++) {
-                game.initAI(ai);
-                while (!game.isGameOver()) {
-                    game.AIPlay();
+            lines = 0;
+            scores = 0;
+            Thread[] threads = new Thread[100];
+            for (int repeat = 0; repeat < 100; repeat++) {
+                threads[repeat] = new Thread() {
+                    @Override
+                    public void run() {
+                        TetrisSimple game = new TetrisSimple();
+                        game.initAI(ai);
+                        while (!game.isGameOver()) {
+                            game.AIPlay();
+                        }
+                        addLines(game.getLines());
+                        addScores(game.getScore());
+                    }
+                };
+                threads[repeat].run();
+            }
+            for (int i = 0; i < threads.length; i++) {
+                try {
+                    threads[i].join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                lines += game.getLines();
-                scores += game.getScore();
             }
             if (lines > 0) {
                 currentGen.add(new Individual(ai.getWeight(), scores, lines));
@@ -110,20 +131,33 @@ public class TetrisGA {
             Individual i;
             if (indivi < copy) {
                 i = currentGen.get(indivi);
-            } else if (indivi < copy + mutation) {
-                i = mutation(select());
             } else
-                i = crossOver(select(), select());
+                i = mutation(crossOver(select(), select()));
             TetrisAI ai = new TetrisAI(i.getInputWeight(), i.getOutputWeight());
-            long lines = 0;
-            long scores = 0;
+            lines = 0;
+            scores = 0;
+            Thread[] threads = new Thread[100];
             for (int repeat = 0; repeat < 100; repeat++) {
-                game.initAI(ai);
-                while (!game.isGameOver()) {
-                    game.AIPlay();
+                threads[repeat] = new Thread() {
+                    @Override
+                    public void run() {
+                        TetrisSimple game = new TetrisSimple();
+                        game.initAI(ai);
+                        while (!game.isGameOver()) {
+                            game.AIPlay();
+                        }
+                        addLines(game.getLines());
+                        addScores(game.getScore());
+                    }
+                };
+                threads[repeat].run();
+            }
+            for (int j = 0; j < threads.length; j++) {
+                try {
+                    threads[j].join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                lines += game.getLines();
-                scores += game.getScore();
             }
             nextGen.add(new Individual(ai.getWeight(), scores, lines));
             indivi++;
@@ -159,12 +193,15 @@ public class TetrisGA {
         double[][] inputB = parentB.getInputWeight();
         double[] outputB = parentB.getOutputWeight();
 
-        int index = start;
-        for (; index < end && index < inputWeightSize; index++) {
-            inputA[index / midUnit][index % midUnit] = inputB[index / midUnit][index % midUnit];
+        for (int i = 0; i < inputA.length; i++) {
+            for (int j = 0; j < inputA[i].length; j++) {
+                if(rand.nextBoolean())
+                    inputA[i][j]=inputB[i][j];
+            }
         }
-        for (; index < end; index++) {
-            outputA[index - inputWeightSize] = outputB[index - inputWeightSize];
+        for(int i=0;i<outputA.length;i++){
+            if(rand.nextBoolean())
+                outputA[i]=outputB[i];
         }
         return new Individual(inputA, outputA);
     }

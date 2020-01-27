@@ -349,6 +349,7 @@ public class Tetris extends JPanel {
 
     private void drawNext(Graphics g) {
         for (int i = 0; i < nextNum; i++) {
+            getNextPiece();
             Tetramino piece = nextPieces.get(i);
             g.setColor(piece.getColor());
             for (Point p : piece.getPoints(0)) {
