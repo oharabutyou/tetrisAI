@@ -121,7 +121,7 @@ public class TetrisSimple {
                 pieceHeight = p.y;
         }
         clearRows(pieceHeight);
-        if (!newPiece() || lines >= 40) {
+        if (!newPiece() || lines >= 100) {
             gameOver = true;
         }
     }

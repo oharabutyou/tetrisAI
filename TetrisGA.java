@@ -98,7 +98,7 @@ public class TetrisGA {
                     e.printStackTrace();
                 }
             }
-            if (scores > 0) {
+            if (scores > 1000) {
                 currentGen.add(new Individual(ai.getWeight(), scores));
                 indivi++;
                 if (indivi % 10 == 0)
