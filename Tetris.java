@@ -1,8 +1,10 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import javax.swing.JPanel;
 
@@ -17,6 +19,7 @@ public class Tetris extends JPanel {
     private boolean canHold;
     private boolean nearFix;
     private boolean gameOver;
+    private Tetris TetrisVS;
 
     private TetrisScore score;
     private Color[][] well;
@@ -24,7 +27,7 @@ public class Tetris extends JPanel {
 
     public static final int boardWidth = 12;
     public static final int boardHeight = 23;
-    public static final int blockSize = 35;
+    public static final int blockSize = 25;
     public static final int blockMargin = 2;
     public static final int blockSM = blockMargin + blockSize;
     public static final int width = (boardWidth + 1) * blockSM;
@@ -39,9 +42,10 @@ public class Tetris extends JPanel {
         nearFix = false;
         hold = null;
         canHold = true;
-        score = new TetrisScore(50);
+        score = new TetrisScore(1);
         nextPieces.clear();
         setBounds(0, 0, width + 2 + blockSM * 6, height + 30);
+        setPreferredSize(new Dimension(width + 2 + blockSM * 6, height + 30));
         well = new Color[boardWidth][boardHeight];
         for (int i = 0; i < boardWidth; i++) {
             for (int j = 0; j < boardHeight; j++) {
@@ -74,8 +78,8 @@ public class Tetris extends JPanel {
         return true;
     }
 
-    public Tetramino getNextPiece(){
-        while (nextPieces.size() <= nextNum+1) {
+    public Tetramino getNextPiece() {
+        while (nextPieces.size() <= nextNum + 1) {
             ArrayList<Integer> news = new ArrayList<>();
             Collections.addAll(news, 0, 1, 2, 3, 4, 5, 6);
             Collections.shuffle(news);
@@ -245,11 +249,12 @@ public class Tetris extends JPanel {
             well[current.getOriginX() + p.x][current.getOriginY() + p.y] = current.getColor();
         }
         clearRows();
+        push(score.getDamage());
         nearFix = false;
         canHold = true;
         if (!newPiece() || score.getLines() >= 40) {
             score.gameOver();
-            //System.out.println("Gameover!\n" + score.getResult());
+            // System.out.println("Gameover!\n" + score.getResult());
             gameOver = true;
         }
     }
@@ -278,6 +283,23 @@ public class Tetris extends JPanel {
         }
     }
 
+    private void push(int damage) {
+        if (damage > 0) {
+            int hole = (new Random()).nextInt(boardWidth - 3) + 1;
+            for (int j = damage; j < boardHeight - 1; j++) {
+                for (int i = 1; i < boardWidth - 1; i++) {
+                    well[i][j - damage] = well[i][j];
+                }
+            }
+            for (int j = damage; j >0; j--) {
+                for(int i=1;i<boardWidth-1;i++){
+                    if(i==hole)well[i][boardHeight-1-j]=Color.black;
+                    else well[i][boardHeight-1-j]=Color.lightGray;
+                }
+            }
+        }
+    }
+
     /**
      * Clear completed rows from the field and award score according to the number
      * of simultaneously cleared rows.
@@ -300,7 +322,10 @@ public class Tetris extends JPanel {
                 numClears += 1;
             }
         }
-        score.addScore(numClears);
+        int power = score.addScore(numClears);
+        if (TetrisVS != null) {
+            TetrisVS.score().attack(power);
+        }
     }
 
     public long getSpeed() {
@@ -395,13 +420,20 @@ public class Tetris extends JPanel {
         init();
     }
 
+    public void setVS(Tetris TetrisVS) {
+        this.TetrisVS = TetrisVS;
+    }
+
     public void AIPlay() {
         Color[][] cpy = well.clone();
         for (int i = 0; i < cpy.length; i++) {
             cpy[i] = well[i].clone();
         }
         TetrisCtrl ctrl = ai.ctrl(cpy, current.getPiece(), getNextPiece().getPiece());
-        if(ctrl!=null)AICtrl(ctrl);else dropDown();
+        if (ctrl != null)
+            AICtrl(ctrl);
+        else
+            dropDown();
     }
 
     public void AICtrl(TetrisCtrl ctrl) {
@@ -410,11 +442,11 @@ public class Tetris extends JPanel {
         hardDrop();
     }
 
-    public long getLines(){
+    public long getLines() {
         return score.getLines();
     }
 
-    public TetrisScore score(){
+    public TetrisScore score() {
         return score;
     }
 }

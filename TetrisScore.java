@@ -11,6 +11,7 @@ public class TetrisScore {
     private long level;
     private long speed;
     private String msg;
+    private int damage;
 
     /**
      * 0->tspin,1->single,2->double,3->triple,4->tetris
@@ -34,6 +35,7 @@ public class TetrisScore {
             speed = speed * 3 / 4;
         }
         msg = "START!";
+        damage=0;
         counts = new long[5];
         countBtoB = 0;
         maxREN = 0;
@@ -99,12 +101,14 @@ public class TetrisScore {
      * 
      * @param numClears
      */
-    public void addScore(int numClears) {
+    public int addScore(int numClears) {
+        int power=0;
         msg = "";
         boolean preBtoB = BtoB;
         if (tspin) {
             counts[0]++;
             msg = "T-Spin ";
+            power++;
         }
         if (numClears > 0) {
             BtoB = false;
@@ -129,6 +133,7 @@ public class TetrisScore {
             break;
         case 2:
             score += 200 * level;
+            power+=1;
             if (tspin)
                 score += 200 * level;
             BtoB = tspin;
@@ -136,6 +141,7 @@ public class TetrisScore {
             break;
         case 3:
             score += 400 * level;
+            power+=2;
             if (tspin)
                 score += 400 * level;
             BtoB = tspin;
@@ -143,6 +149,7 @@ public class TetrisScore {
             break;
         case 4:
             score += 800 * level;
+            power+=4;
             BtoB = true;
             msg += "TETRIS!";
             break;
@@ -159,8 +166,20 @@ public class TetrisScore {
         if (BtoB && preBtoB && numClears > 0) {
             msg += " Back to Back!";
             score += 200 * level;
+            power++;
             countBtoB++;
         }
+
+        return power;
     }
 
+    public void attack(int power){
+        damage+=power;
+    }
+
+    public int getDamage(){
+        int temp = damage;
+        damage = 0;
+        return temp;
+    }
 }
