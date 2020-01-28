@@ -34,7 +34,7 @@ public class Individual implements Comparable<Individual> {
     }
 
     public Individual clone() {
-        return new Individual(inputWeight.clone(), outputWeight.clone(), score);
+        return new Individual(getInputWeight(), outputWeight.clone(), score);
     }
 
     public double[][] getInputWeight() {
