@@ -45,7 +45,7 @@ public class TetrisSimple {
     public boolean newPiece() {
         while (nextPieces.size() <= nextNum) {
             ArrayList<Integer> news = new ArrayList<>();
-            Collections.addAll(news, 0, 1, 2, 3, 4, 5, 6);
+            Collections.addAll(news, 0, 1, 1, 1, 2, 2, 2, 3, 4, 5, 6);
             Collections.shuffle(news);
             for (Integer integer : news) {
                 nextPieces.add(new Tetramino(integer));
@@ -61,7 +61,7 @@ public class TetrisSimple {
     public Tetramino getNextPiece() {
         while (nextPieces.size() <= nextNum) {
             ArrayList<Integer> news = new ArrayList<>();
-            Collections.addAll(news, 0,1,1, 1, 2,2,2, 3, 4, 5, 6);
+            Collections.addAll(news, 0, 1, 1, 1, 2, 2, 2, 3, 4, 5, 6);
             Collections.shuffle(news);
             for (Integer integer : news) {
                 nextPieces.add(new Tetramino(integer));
@@ -105,7 +105,7 @@ public class TetrisSimple {
 
     public void hardDrop() {
         while (!dropDown()) {
-            //score += 2;
+            // score += 2;
         }
     }
 
@@ -155,13 +155,13 @@ public class TetrisSimple {
                 }
             }
             if (!gap) {
-                deleteRow(current.getOriginY()+j);
+                deleteRow(current.getOriginY() + j);
                 j += 1;
                 numClears += 1;
             }
         }
         lines += numClears;
-        score += numClears+numClears;
+        score += numClears + numClears;
     }
 
     public void initAI(TetrisAI ai) {

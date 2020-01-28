@@ -1,51 +1,55 @@
-public class Individual implements Comparable<Individual>{
+public class Individual implements Comparable<Individual> {
     private double[][] inputWeight;
     private double[] outputWeight;
     private long score;
-    private long lines;
 
-	@Override
-	public int compareTo(Individual o) {
-        if(lines==o.lines){
-            if(score>o.score)return -1;
-            else if(score==o.score)return 0;
-            else return 1;
-        }else{
-            return (lines>o.lines)?-1:1;
-        }
-	}
+    @Override
+    public int compareTo(Individual o) {
+        if (score > o.score)
+            return -1;
+        else if (score == o.score)
+            return 0;
+        else
+            return 1;
+    }
 
     public Individual(double[][] inputWeight, double[] outputWeight) {
         this.inputWeight = inputWeight;
         this.outputWeight = outputWeight;
     }
 
-    public Individual(Individual indivi,long score,long lines){
-        this(indivi.inputWeight,indivi.outputWeight);
-        this.score=score;
-        this.lines=lines;
+    public Individual(double[][] inputWeight, double[] outputWeight, long score) {
+        this.inputWeight = inputWeight;
+        this.outputWeight = outputWeight;
+        this.score = score;
     }
 
-    public Individual(Individual i){
-        this(i.inputWeight,i.outputWeight,i.score,i.lines);
+    public Individual(Individual indivi, long score) {
+        this(indivi.inputWeight, indivi.outputWeight, score);
     }
 
-    public Individual clone(){
-        return new Individual(inputWeight.clone(),outputWeight.clone(),score,lines);
+    public Individual(Individual i) {
+        this(i.inputWeight, i.outputWeight);
+        this.score = i.score;
     }
 
-    public double[][] getInputWeight(){
-        return inputWeight.clone();
+    public Individual clone() {
+        return new Individual(inputWeight.clone(), outputWeight.clone(), score);
     }
-    public double[] getOutputWeight(){
+
+    public double[][] getInputWeight() {
+        double[][] clone = inputWeight.clone();
+        for (int i = 0; i < clone.length; i++) {
+            clone[i] = inputWeight[i].clone();
+        }
+        return clone;
+    }
+
+    public double[] getOutputWeight() {
         return outputWeight.clone();
     }
 
-    public long getLines(){
-        return lines;
-    }
-
-    public long getScore(){
+    public long getScore() {
         return score;
     }
 
@@ -53,7 +57,6 @@ public class Individual implements Comparable<Individual>{
         this.inputWeight = inputWeight;
         this.outputWeight = outputWeight;
         this.score = score;
-        this.lines = lines;
     }
 
     public void setInputWeight(double[][] inputWeight) {
@@ -66,10 +69,6 @@ public class Individual implements Comparable<Individual>{
 
     public void setScore(long score) {
         this.score = score;
-    }
-
-    public void setLines(long lines) {
-        this.lines = lines;
     }
 
 }
