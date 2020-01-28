@@ -21,6 +21,7 @@ public class TetrisGA {
     private int inputWeightSize;
     private long lines;
     private long scores;
+    private long count;
 
     public TetrisGA(int individuals, int generations) {
         this.individuals = individuals;
@@ -33,6 +34,10 @@ public class TetrisGA {
 
     void addScores(long scores) {
         this.scores += scores;
+    }
+
+    void addCount(int i) {
+        count += i;
     }
 
     public double[][] getInputWeight() {
@@ -81,6 +86,7 @@ public class TetrisGA {
             TetrisAI ai = new TetrisAI();
             lines = 0;
             scores = 0;
+            count = 0;
             Thread[] threads = new Thread[100];
             for (int repeat = 0; repeat < 100; repeat++) {
                 threads[repeat] = new Thread() {
@@ -93,9 +99,10 @@ public class TetrisGA {
                         }
                         addLines(game.getLines());
                         addScores(game.getScore());
+                        addCount(1);
                     }
                 };
-                threads[repeat].run();
+                threads[repeat].start();
             }
             for (int i = 0; i < threads.length; i++) {
                 try {
@@ -103,6 +110,9 @@ public class TetrisGA {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+            if (count != 100) {
+                System.out.println("Warning!count did not reach 100.");
             }
             if (lines > 100) {
                 currentGen.add(new Individual(ai.getWeight(), scores, lines));
@@ -136,6 +146,7 @@ public class TetrisGA {
             TetrisAI ai = new TetrisAI(i.getInputWeight(), i.getOutputWeight());
             lines = 0;
             scores = 0;
+            count = 0;
             Thread[] threads = new Thread[100];
             for (int repeat = 0; repeat < 100; repeat++) {
                 threads[repeat] = new Thread() {
@@ -148,9 +159,10 @@ public class TetrisGA {
                         }
                         addLines(game.getLines());
                         addScores(game.getScore());
+                        addCount(1);
                     }
                 };
-                threads[repeat].run();
+                threads[repeat].start();
             }
             for (int j = 0; j < threads.length; j++) {
                 try {
@@ -158,6 +170,9 @@ public class TetrisGA {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+            if (count != 100) {
+                System.out.println("Warning!count did not reach 100.");
             }
             nextGen.add(new Individual(ai.getWeight(), scores, lines));
             indivi++;
