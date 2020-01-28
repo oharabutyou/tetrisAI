@@ -119,21 +119,11 @@ public class TetrisAI {
                 for (int i = 0; i < addCurrent.length; i++) {
                     addCurrent[i] = well[i].clone();
                 }
-                if (null == addPiece(addCurrent, currentPiece, currentX, currentRotation))
-                    continue;
-                for (int nextX = 1; nextX < Tetris.boardWidth; nextX++) {
-                    for (int nextRotation = 0; nextRotation < 4; nextRotation++) {
-                        Color[][] addNext = addCurrent.clone();
-                        for (int i = 0; i < addNext.length; i++) {
-                            addNext[i] = addCurrent[i].clone();
-                        }
-                        double value = evalue(addPiece(addNext, nextPiece, nextX, nextRotation));
-                        if (maxValue < value) {
-                            maxValue = value;
-                            ctrlX = currentX;
-                            ctrlRotation = currentRotation;
-                        }
-                    }
+                double value = evalue(addPiece(addCurrent, currentPiece, currentX, currentRotation));
+                if (maxValue < value) {
+                    maxValue = value;
+                    ctrlX = currentX;
+                    ctrlRotation = currentRotation;
                 }
             }
         }
@@ -218,8 +208,8 @@ public class TetrisAI {
         values.setHoleDepth(holeDepth);
 
         int cumulativeWells = 0;
-        colsHeight[0]=boardHeight;
-        colsHeight[boardWidth-1]=boardHeight;
+        colsHeight[0] = boardHeight;
+        colsHeight[boardWidth - 1] = boardHeight;
         for (int i = 1; i < boardWidth - 1; i++) {
             int height = (colsHeight[i - 1] < colsHeight[i + 1]) ? (colsHeight[i - 1]) : (colsHeight[i + 1]);
             height -= colsHeight[i];
@@ -296,13 +286,16 @@ public class TetrisAI {
                     + holeSize(well, boolWell, x + 1, y) + holeSize(well, boolWell, x, y + 1);
         }
     }
-    public double[][] getInputWeight(){
+
+    public double[][] getInputWeight() {
         return inputWeight;
     }
-    public double[] getOutputWeight(){
+
+    public double[] getOutputWeight() {
         return outputWeight;
     }
-    public Individual getWeight(){
+
+    public Individual getWeight() {
         return new Individual(inputWeight, outputWeight);
     }
 }

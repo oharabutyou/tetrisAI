@@ -1,0 +1,40 @@
+1ok.hard drop
+2ok.hold
+3ok.next
+4ok.gameover
+5ok.levelup
+6ok.more key set
+7ok.no timer reset
+8ok.shuffle block order
+9ok.shadow
+10ok.format codes
+11ok.super rotation system
+12ok.use class
+13ok.t-spin
+16ok.battle
+18ok.score system
+19ok.setup ai
+20ok.setup GA
+
+実践セミナー発表構成
+時間5分
+
+目的：テトリス製作で学んだ技能を紹介
+
+スライド1：追加した機能
+テトリスはよくやっていたので、それに近づくように改造
+上記参照、すべて列挙
+スライド2：クラスを使ってコードを分割
+もとのコードはすべてが一つに入っていて、
+目的のメソッドを探すのが面倒
+スライド3：テトリスAI
+盤面の特徴量をNNに通して数値化
+次のブロックがわかっていて、
+
+参照
+"A simple Tetris clone written in Java"
+https://gist.github.com/DataWraith/5236083
+"Building Controllers for Tetris"
+https://hal.inria.fr/inria-00418954/file/article.pdf
+"TGM-ACE SRS study"
+http://web.archive.org/web/20081216145551/http://www.the-shell.net/img/srs_study.html

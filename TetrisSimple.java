@@ -61,7 +61,7 @@ public class TetrisSimple {
     public Tetramino getNextPiece() {
         while (nextPieces.size() <= nextNum) {
             ArrayList<Integer> news = new ArrayList<>();
-            Collections.addAll(news, 0, 1, 2, 3, 4, 5, 6);
+            Collections.addAll(news, 0,1,1, 1, 2,2,2, 3, 4, 5, 6);
             Collections.shuffle(news);
             for (Integer integer : news) {
                 nextPieces.add(new Tetramino(integer));
@@ -160,21 +160,8 @@ public class TetrisSimple {
                 numClears += 1;
             }
         }
-        switch (numClears) {
-        case 1:
-            score += 1000;
-            break;
-        case 2:
-            score += 2000;
-            break;
-        case 3:
-            score += 4000;
-            break;
-        case 4:
-            score += 8000;
-            break;
-        }
         lines += numClears;
+        score += numClears+numClears;
     }
 
     public void initAI(TetrisAI ai) {

@@ -13,6 +13,8 @@
 13ok.t-spin
 14.score ranking
 15.item
-16.battle
+16ok.battle
 17.timer
 18ok.score system
+19ok.setup ai
+20ok.setup GA
