@@ -8,6 +8,7 @@ import java.util.Random;
 public class TetrisGA {
 
     private static final int copy = 5;
+    private static final double mutationRate = 0.01;
     private int individuals;
     private int generations;
     private double[][] inputWeight;
@@ -201,17 +202,21 @@ public class TetrisGA {
     }
 
     private Individual mutation(Individual i) {
-        int index = randIndex();
         Individual mutation = new Individual(i);
-        if (index < inputUnit * midUnit) {
-            double[][] input = mutation.getInputWeight();
-            input[index / midUnit][index % midUnit] = 1.0 - rand.nextDouble() * 2.0;
-            mutation.setInputWeight(input);
-        } else {
-            double[] output = mutation.getOutputWeight();
-            output[index - inputWeightSize] = 1.0 - rand.nextDouble() * 2.0;
-            mutation.setOutputWeight(output);
+        double[][] input = mutation.getInputWeight();
+        double[] output = mutation.getOutputWeight();
+        for (int index = 0; index < input.length; index++) {
+            for (int j = 0; j < input[index].length; j++) {
+                if (rand.nextDouble() < mutationRate)
+                    input[index][j] = 1.0 - rand.nextDouble() * 2.0;
+            }
         }
+        for (int index = 0; index < output.length; index++) {
+            if (rand.nextDouble() < mutationRate)
+                output[index] = 1.0 - rand.nextDouble() * 2.0;
+        }
+        mutation.setInputWeight(input);
+        mutation.setOutputWeight(output);
         return mutation;
     }
 
