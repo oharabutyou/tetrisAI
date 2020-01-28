@@ -62,16 +62,17 @@ public class TetrisGA {
         // print weights
         System.out.println("inputWeight:");
         for (int i = 0; i < inputWeight.length; i++) {
+            System.out.print("{");
             for (int j = 0; j < inputWeight[i].length; j++) {
                 System.out.print(inputWeight[i][j] + ",");
             }
-            System.out.println();
+            System.out.print("},");
         }
-        System.out.println("outputWeight:");
+        System.out.print("\noutputWeight:\n{");
         for (int i = 0; i < outputWeight.length; i++) {
             System.out.print(outputWeight[i] + ",");
         }
-        System.out.println();
+        System.out.print("}\n");
     }
 
     private void firstGen() {
@@ -107,7 +108,8 @@ public class TetrisGA {
             if (lines > 100) {
                 currentGen.add(new Individual(ai.getWeight(), scores, lines));
                 indivi++;
-                System.out.print(indivi + " ");
+                if (indivi % 10 == 0)
+                    System.out.print(indivi + " ");
             }
         }
         System.out.println();
@@ -161,7 +163,8 @@ public class TetrisGA {
             }
             nextGen.add(new Individual(ai.getWeight(), scores, lines));
             indivi++;
-            System.out.print(indivi + " ");
+            if (indivi % 10 == 0)
+                System.out.print(indivi + " ");
         }
         System.out.println();
         Collections.sort(nextGen);
