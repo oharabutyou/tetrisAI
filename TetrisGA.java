@@ -22,6 +22,12 @@ public class TetrisGA {
     private int inputWeightSize;
     private long scores;
 
+    public static void main(String[] args) {
+        for (int i = 0; i < 3; i++) {
+            (new TetrisGA(100, 500)).startSearch();
+        }
+    }
+
     public TetrisGA(int individuals, int generations) {
         this.individuals = individuals;
         this.generations = generations;
