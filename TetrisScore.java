@@ -11,7 +11,7 @@ public class TetrisScore {
     private long level;
     private long speed;
     private String msg;
-    private int damage;
+    volatile private int damage;
 
     /**
      * 0->tspin,1->single,2->double,3->triple,4->tetris
@@ -173,8 +173,15 @@ public class TetrisScore {
         return power;
     }
 
-    public void attack(int power){
+    synchronized public void attack(int power){
         damage+=power;
+    }
+
+    synchronized public void recover(int power){
+        if(power>damage)
+            damage = 0;
+        else
+            damage -= power;
     }
 
     public int getDamage(){

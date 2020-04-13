@@ -254,7 +254,7 @@ public class Tetris extends JPanel {
         canHold = true;
         if (!newPiece() || score.getLines() >= 40) {
             score.gameOver();
-            // System.out.println("Gameover!\n" + score.getResult());
+            System.out.println("Gameover!\n" + score.getResult());
             gameOver = true;
         }
     }
@@ -325,6 +325,7 @@ public class Tetris extends JPanel {
         int power = score.addScore(numClears);
         if (TetrisVS != null) {
             TetrisVS.score().attack(power);
+            score.recover(power);
         }
     }
 

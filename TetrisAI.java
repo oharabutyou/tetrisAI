@@ -113,20 +113,25 @@ public class TetrisAI {
         int ctrlX = 1;
         int ctrlRotation = 0;
         double maxValue = Double.NEGATIVE_INFINITY;
+        Values values = null;
+        //Values maxValues = null;
         for (int currentX = 1; currentX < Tetris.boardWidth; currentX++) {
             for (int currentRotation = 0; currentRotation < 4; currentRotation++) {
                 Color[][] addCurrent = well.clone();
                 for (int i = 0; i < addCurrent.length; i++) {
                     addCurrent[i] = well[i].clone();
                 }
-                double value = evalue(addPiece(addCurrent, currentPiece, currentX, currentRotation));
+                values = addPiece(addCurrent, currentPiece, currentX, currentRotation);
+                double value = evalue(values);
                 if (maxValue < value) {
                     maxValue = value;
+                    //maxValues = values;
                     ctrlX = currentX;
                     ctrlRotation = currentRotation;
                 }
             }
         }
+        //System.out.println(currentPiece + maxValues.toString() + "," + ctrlX + "," + ctrlRotation);
         if (maxValue != Double.NEGATIVE_INFINITY)
             return new TetrisCtrl(ctrlX, ctrlRotation);
         else
@@ -223,20 +228,27 @@ public class TetrisAI {
         int rowTransitions = 0;
         int numHoles = 0;
         int rowsWithHoles = 0;
+        // making conter rowsWithHoles
         for (int j = boardHeight - 2; j > 0; j--) {
             boolean trans = (well[1][j] == Color.BLACK);
+            boolean withHoles = false;
             for (int i = 1; i < boardWidth - 1; i++) {
                 boolean next = (well[i][j] == Color.BLACK);
                 if (trans != next)
                     rowTransitions++;
                 trans = next;
-                if (next && !boolWell[i][j]) {
-                    if (rowsWithHoles == 0)
-                        rowsWithHoles = boardHeight - j - 1;
-                    holeSize(well, boolWell, i, j);
-                    numHoles++;
+                if (next) {
+                    if (!boolWell[i][j]) {
+                        holeSize(well, boolWell, i, j);
+                        numHoles++;
+                    }
+                    if ((boardHeight - j - 1) < colsHeight[i]) {
+                        withHoles = true;
+                    }
                 }
             }
+            if (withHoles)
+                rowsWithHoles++;
         }
         values.setRowTransitions(rowTransitions);
         values.setNumHoles(numHoles);

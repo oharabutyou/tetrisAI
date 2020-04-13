@@ -93,6 +93,7 @@ public class TetrisGA {
                         while (!game.isGameOver()) {
                             game.AIPlay();
                         }
+                        if(game.getLines()==40)
                         addScores(game.getScore());
                     }
                 };
@@ -105,7 +106,7 @@ public class TetrisGA {
                     e.printStackTrace();
                 }
             }
-            if (scores > 50000) {
+            if (scores > 0) {
                 currentGen.add(new Individual(ai.getWeight(), scores));
                 indivi++;
                 if (indivi % 10 == 0)
@@ -147,6 +148,7 @@ public class TetrisGA {
                         while (!game.isGameOver()) {
                             game.AIPlay();
                         }
+                        if(game.getLines()==40)
                         addScores(game.getScore());
                     }
                 };
@@ -213,13 +215,19 @@ public class TetrisGA {
         double[] output = mutation.getOutputWeight();
         for (int index = 0; index < input.length; index++) {
             for (int j = 0; j < input[index].length; j++) {
-                if (rand.nextDouble() < mutationRate)
+                double num = rand.nextDouble();
+                if (num < mutationRate)
                     input[index][j] = 1.0 - rand.nextDouble() * 2.0;
+                else if (num < mutationRate * 2.0)
+                    input[index][j] *= -1.0;
             }
         }
         for (int index = 0; index < output.length; index++) {
-            if (rand.nextDouble() < mutationRate)
+            double num = rand.nextDouble();
+            if (num < mutationRate)
                 output[index] = 1.0 - rand.nextDouble() * 2.0;
+            else if (num < mutationRate * 2.0)
+                output[index] *= -1.0;
         }
         mutation.setInputWeight(input);
         mutation.setOutputWeight(output);

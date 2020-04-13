@@ -161,7 +161,7 @@ public class TetrisSimple {
             }
         }
         lines += numClears;
-        score += numClears + numClears;
+        score += (numClears * numClears);
     }
 
     public void initAI(TetrisAI ai) {
