@@ -114,8 +114,9 @@ public class TetrisAI {
         int ctrlRotation = 0;
         double maxValue = Double.NEGATIVE_INFINITY;
         Values values = null;
-        //Values maxValues = null;
-        for (int currentX = 1; currentX < Tetris.boardWidth; currentX++) {
+        // Values maxValues = null;
+        // double[][] valueList = new double[4][Tetris.boardWidth];
+        for (int currentX = 0; currentX < Tetris.boardWidth; currentX++) {
             for (int currentRotation = 0; currentRotation < 4; currentRotation++) {
                 Color[][] addCurrent = well.clone();
                 for (int i = 0; i < addCurrent.length; i++) {
@@ -123,15 +124,22 @@ public class TetrisAI {
                 }
                 values = addPiece(addCurrent, currentPiece, currentX, currentRotation);
                 double value = evalue(values);
+                // valueList[currentRotation][currentX] = value;
                 if (maxValue < value) {
                     maxValue = value;
-                    //maxValues = values;
+                    // maxValues = values;
                     ctrlX = currentX;
                     ctrlRotation = currentRotation;
                 }
             }
         }
-        //System.out.println(currentPiece + maxValues.toString() + "," + ctrlX + "," + ctrlRotation);
+        // System.out.println(currentPiece + maxValues.toString() + "," + ctrlX + "," + ctrlRotation);
+        // for (int i = 0; i < valueList.length; i++) {
+        //     for (int j = 0; j < valueList[i].length; j++) {
+        //         System.out.printf("%3.1f,",valueList[i][j]);
+        //     }
+        //     System.out.println();
+        // }
         if (maxValue != Double.NEGATIVE_INFINITY)
             return new TetrisCtrl(ctrlX, ctrlRotation);
         else
