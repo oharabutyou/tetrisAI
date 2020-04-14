@@ -20,7 +20,7 @@ public class TetrisGA {
     private int inputUnit;
     private int midUnit;
     private int inputWeightSize;
-    private long scores;
+    volatile private long scores;
 
     public static void main(String[] args) {
         for (int i = 0; i < 3; i++) {
@@ -93,8 +93,8 @@ public class TetrisGA {
                         while (!game.isGameOver()) {
                             game.AIPlay();
                         }
-                        if(game.getLines()==40)
-                        addScores(game.getScore());
+                        if(game.getLines()>=40)
+                        {addScores(game.getScore());System.out.print(game.getScore()+",");}
                     }
                 };
                 threads[repeat].start();
@@ -148,7 +148,7 @@ public class TetrisGA {
                         while (!game.isGameOver()) {
                             game.AIPlay();
                         }
-                        if(game.getLines()==40)
+                        if(game.getLines()>=40)
                         addScores(game.getScore());
                     }
                 };

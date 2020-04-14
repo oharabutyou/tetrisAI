@@ -26,7 +26,7 @@ public class TetrisScore {
     public TetrisScore(long level) {
         tspin = false;
         BtoB = false;
-        REN = 0;
+        REN = -1;
         score = 0;
         scoreLine = 0;
         this.level = level;
@@ -117,7 +117,7 @@ public class TetrisScore {
             if (maxREN < REN)
                 maxREN = REN;
         } else
-            REN = 0;
+            REN = -1;
 
         switch (numClears) {
         case 0:
@@ -159,7 +159,7 @@ public class TetrisScore {
             speed = speed * 3 / 4;
         }
         scoreLine += numClears;
-        if (REN > 1) {
+        if (REN > 0) {
             msg += " REN:" + REN;
             score += 100 * level * REN;
         }

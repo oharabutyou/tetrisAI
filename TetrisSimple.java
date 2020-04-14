@@ -121,7 +121,7 @@ public class TetrisSimple {
                 pieceHeight = p.y;
         }
         clearRows(pieceHeight);
-        if (!newPiece() || lines >= 1000) {
+        if (!newPiece() || lines >= 80) {
             gameOver = true;
         }
     }
@@ -161,7 +161,10 @@ public class TetrisSimple {
             }
         }
         lines += numClears;
-        score += (numClears * numClears);
+        score += numClears==1 ? 1 : 0;
+        score += numClears==2 ? 10000 : 0;
+        score += numClears==3 ? 100000000 : 0;
+        score += numClears==4 ? 1000000000000L : 0;
     }
 
     public void initAI(TetrisAI ai) {
